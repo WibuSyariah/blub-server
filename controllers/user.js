@@ -2,25 +2,23 @@ const { User } = require("../models");
 const { comparePassword } = require("../helpers/bcrypt");
 const { payloadToToken } = require("../helpers/jwt");
 
-class userController {
+class UserController {
   static async register(req, res, next) {
     try {
-      const { email, password, phoneNumber, address } = req.body;
+      const { email, password } = req.body;
 
       const user = await User.create({
         email,
         password,
-        phoneNumber,
-        address,
       });
 
-      const payload = { id: user.id, email: user.email, role: user.role };
+      const payload = { id: user.id, email: user.email };
 
       const token = payloadToToken(payload);
 
       res.status(201).json({
-        message: "Admin registered successfully",
-        statusCode: 201,
+        message: "User registered successfully",
+        access_token: token,
       });
     } catch (error) {
       next(error);
@@ -47,16 +45,12 @@ class userController {
         throw { name: "INVALID_PASSWORD" };
       }
 
-      const payload = { id: user.id, email: user.email, role: user.role };
+      const payload = { id: user.id, email: user.email };
 
       const token = payloadToToken(payload);
 
       res.status(200).json({
-        statusCode: 200,
         access_token: token,
-        UserId: user.id,
-        email: user.email,
-        role: user.role,
       });
     } catch (error) {
       next(error);
@@ -64,4 +58,4 @@ class userController {
   }
 }
 
-module.exports = userController;
+module.exports = UserController;
